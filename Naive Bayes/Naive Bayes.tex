@@ -1,0 +1,163 @@
+
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm,amsfonts,latexsym,bbm,xspace,graphicx,float,mathtools,
+verbatim, xcolor} 
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\newcommand{\new}[1]{\textcolor{red}{#1}}
+
+\newcommand{\hP}{\hat P}
+\newcommand{\hp}{\hat p}
+\newcommand{\Dk}{\Delta_k}
+\newcommand{\Px}{P(x)}
+\newcommand{\Qx}{Q(x)}
+\newcommand{\Nx}{N_x}
+
+\newcommand{\Py}{P(y)}
+\newcommand{\Qy}{Q(y)}
+\newcommand{\Pml}{P_{ML}}
+\newcommand{\Pmlx}{\Pml(x)}
+\newcommand{\Pbeta}{P_{\beta}}
+\newcommand{\Pbetax}{\Pbeta(x)}
+
+
+\newcommand{\dTV}[2]{d_{TV} (#1,#2)}
+\newcommand{\dKL}[2]{D(#1||#2)}
+\newcommand{\chisq}[2]{\chi^2(#1,#2)}
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\nPepsp}[1]{n^*(#1, \eps)}
+\newcommand{\nPeps}{\nPepsp{\cP}}
+
+
+\newcommand{\sumX}{\sum_{x\in\cX}}
+
+\newcommand{\Bpr}[1]{Bern(#1)}
+
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\input{./glodef} 
+
+\title{Assignment Two\\ ECE 4200/5420}
+\date{}
+
+\begin{document}
+\maketitle 
+
+\begin{itemize}
+\item
+Provide credit to \textbf{any sources} other than the course staff that helped you solve the problems. This includes \textbf{all students} you talked to regarding the problems. 	
+\item
+You can look up definitions/basics online (e.g., wikipedia, stack-exchange, etc).
+\item
+{\bf The due date is 9/17/2021, 23.59.59 Eastern time}. 
+\item
+Submission rules are the same as previous assignment.
+\end{itemize}
+
+\begin{problem}{1 (15 points)}
+In class we said that for a generative model (e.g., Naive Bayes), the optimal estimator will be the maximum aposteriori probability (MAP) estimator that when given a feature $\vctX$, outputs the label that satisfies:
+\[
+\arg\max_{y\in\cY} p(y|\vctX).
+\]
+The maximum likelihood (ML) estimator outputs the label that maximizes the likelihood (probability) of the observation (which is the feature $\vctX$):
+\[
+\arg\max_{y\in\cY} p(\vctX|y).
+\]
+
+In this problem we will see that this is the predictor with the least error probability if the underlying data is generated from the model. 
+
+We will simplify the setting by considering a binary classification task, where the labels have two possible values, say $\cY=\{-1, +1\}$. Suppose the model that generates the data is $p(\vctX, y)$, which is \textbf{known}. 
+
+\begin{enumerate}
+\item What is the distribution of $y$ when we observe a feature $\vctX$?
+
+\item Suppose we predict the label $-1$ upon seeing $\vctX$. Show that the probability of error is $p(y=+1|\vctX)$. 
+\item
+Use this to argue that for any $\vctX$ the prediction to minimize the error probability is 
+\[
+\max_{y\in\{-1, +1\}	} p(y|\vctX).
+\]
+This shows that the MAP estimator is the optimal estimator for the binary task. This also extends to larger $\cY$. 
+\item
+Show that if the distribution over the labels is uniform, namely $p(y=-1)=p(y=+1)=0.5$, then the MAP estimator and ML estimator are the same. 
+\item
+Construct \emph{any} generative model where the MAP and ML estimator are not the same. 
+\end{enumerate}
+	
+\end{problem}
+
+
+\begin{problem} {2. (10 points)}
+	\textbf{ML vs MAP and add constant smoothing}. Suppose you generate $n$ independent coin tosses using a coin with bias $\mu$ (i.e. the probability of getting a head for each toss). Let $A(n_H, n_T)$ denote the event of getting $n_H$ heads and $n_T = n - n_H$ tails. Show the following:
+	\begin{enumerate}
+		\item According to maximum likelihood principle, show that your estimate for $\mu$ should be:
+		\[
+			\hat{\mu} = \frac{n_H}{n_H + n_T}.
+		\]
+		\textbf{Hint:} 	Given that the bias is $\mu$, show that:
+		\[
+		p(A(n_H, n_T)|\mu) = {{n_H+n_T} \choose {n_T}} \mu^{n_H} (1 - \mu)^{n_T}.
+		\]
+		\item Consider the following generative process: First generate $\mu$, the bias of the coin, according to the \emph{prior} distribution $p(\mu)$. Then generate $n$ independent coin tosses with bias $\mu$. Show that
+		\[
+			\arg \max_{\mu} p(\mu | A(n_H, n_T)) = \arg \max_{\mu} p(\mu) p( A(n_H, n_T) | \mu). 
+		\]
+		
+		\item Let the prior of the bias be a $Beta$ distribution, which is a distribution over $[0,1]$
+		\[
+			p(\mu) = \frac{\mu^\alpha (1-\mu)^\beta}{\int_0^1 x^\alpha (1-x)^\beta dx},
+		\]
+		show that:
+		\[
+			\arg \max_{\mu} p(\mu | n_H, n_T) = \frac{n_H + \alpha}{n_H + \alpha + n_T + \beta}.
+		\]
+		\textbf{Remark:} This shows that add constant smoothing is equivalent to inducing a $Beta$ distribution prior on the parameter of the generating model.
+	\end{enumerate}
+	
+\end{problem}
+
+\begin{problem}{3. (10 points)}
+	Consider the Tennis data set. In this problem, you don't need the smoothing constant when estimating the prior probabilities of the labels.
+	\begin{enumerate}
+		\item 
+		For $\beta = 1$ (smoothing constant), write down the probabilities of all the features conditioned on the labels. The total number of probabilities you need to compute should not be more than twenty. 
+		\item
+		What are the prior probabilities of the labels? 
+		\item
+		For a new data $(Overcast, Hot, High, Strong)$, what does the Naive Bayes classifier predict for $\beta=0, \beta=1$, and for $\beta\to\infty$?
+	\end{enumerate}
+\end{problem}
+
+
+\begin{problem}{4. (15 points)}
+Recall the Gaussian distribution with mean $\mu$, and variance $\sigma^2$. The density is given by: 
+\[
+p_{\mu,\sigma^2}(x) = \frac1{\sqrt{2\pi\sigma^2}}\exp\Paren{-\frac{(x-\mu)^2}{2\sigma^2}}.
+\]
+Given $n$ independent samples $X_1, \ldots, X_n$ from the same Gaussian distribution with unknown mean, and variance, let $\mu_{ML}$, and $\sigma^2_{ML}$ denote the maximum likelihood estimates of mean and variance. 
+
+\textbf{Hint:} (1) What is the joint density $p(x_1, \ldots, x_n)$ for i.i.d Gaussian random variables $X_1, \ldots, X_n$? (2) If $f(x)>0$, maximizing $f(x)$ is equivalent as maximizing $\log [f(x)]$.
+\begin{enumerate}
+	\item Show that 
+	\[
+	\mu_{ML} = \frac{\sum_{i=1}^n X_i}{n}.
+	\]
+	\item
+	Show that 
+	\[
+	\sigma^2_{ML} = \frac1{n} \Paren{\sum_{i=1}^n \Paren{X_i-\mu_{ML}}^2}.
+	\]
+	\item What is the expectation and variance of $\mu_{ML}$?
+\end{enumerate}
+\end{problem}
+
+
+\begin{problem}{5. (20 points)}
+	See attached Jupyter Notebook for reference.
+\end{problem}
+
+\end{document}
+

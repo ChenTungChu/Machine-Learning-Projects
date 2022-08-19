@@ -1,0 +1,231 @@
+
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath,amssymb,amsthm,amsfonts,latexsym,bbm,xspace,graphicx,float,mathtools,
+verbatim, xcolor} 
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\newcommand{\new}[1]{\textcolor{red}{#1}}
+%\usepackage{psfig}
+
+\newcommand{\future}[1]{\textcolor{red}{#1}}
+
+\newcommand{\hP}{\hat P}
+\newcommand{\hp}{\hat p}
+
+\newcommand{\Dk}{\Delta_k}
+\newcommand{\Px}{P(x)}
+\newcommand{\Qx}{Q(x)}
+\newcommand{\Nx}{N_x}
+
+\newcommand{\Py}{P(y)}
+\newcommand{\Qy}{Q(y)}
+\newcommand{\Pml}{P_{ML}}
+\newcommand{\Pmlx}{\Pml(x)}
+\newcommand{\Pbeta}{P_{\beta}}
+\newcommand{\Pbetax}{\Pbeta(x)}
+
+
+\newcommand{\dTV}[2]{d_{TV} (#1,#2)}
+\newcommand{\dKL}[2]{D(#1||#2)}
+\newcommand{\chisq}[2]{\chi^2(#1,#2)}
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\nPepsp}[1]{n^*(#1, \eps)}
+\newcommand{\nPeps}{\nPepsp{\cP}}
+
+
+\newcommand{\sumX}{\sum_{x\in\cX}}
+
+\newcommand{\Bpr}[1]{Bern(#1)}
+
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\input{./glodef} 
+
+\title{Assignment Four\\ ECE 4200/5420}
+
+\begin{document}
+\maketitle 
+
+\begin{itemize}
+\item
+Provide credit to \textbf{any sources} other than the course staff that helped you solve the problems. This includes \textbf{all students} you talked to regarding the problems.\item
+		Questions marked with an asterisk \textbf{is optional for students taking the class as ECE 4200}. 	
+\item
+You can look up definitions/basics online (e.g., wikipedia, stack-exchange, etc).
+\item
+{\bf The due date is 10/08/2021, 23.59.59 ET}. 
+\item
+Submission rules are the same as previous assignments.
+
+\end{itemize}
+
+
+
+\noindent In \textbf{Problems 1, 2, and 3} we will study linear regression. We will assume in these problems that $w^0=0$. (This can be done by centering the features and labels to have mean 0, but we will not worry about it).  For $\bar w = (w^1, \ldots, w^d)$, and $ X = ( X^1, \ldots,  X^d)$, the regression we want is:
+\begin{align}
+y = w^1 \bar X^1+\ldots + w^d \bar X^d = \bar w\cdot  X.
+\end{align}
+We considered the following regularized least squares objective, which is called as \textbf{Ridge Regression}. For the dataset $S=\{( X_1, y_1), \ldots, ( X_n, y_n)\}$,  
+\begin{align}
+J(\bar w, \lambda) = \sum_{i=1}^n \Paren{y_i -\bar w\cdot X_i}^2 +\lambda \cdot \|\bar w\|_2^2.\label{eqn:ridge}
+\end{align}
+We then find a $\bar w$ to minimize $J(\bar w, \lambda)$, namely
+\begin{equation}
+\arg\min_{\bar w} J(\bar w, \lambda).
+\label{eqn:optim}
+\end{equation}
+\begin{problem}{1 (10 points) Gradient Descent for regression}\quad
+
+\begin{enumerate}
+\item 
+Instead of using the closed form expression we mentioned in class, suppose we want to perform gradient descent to find the optimal solution for $J(\bar w)$. Please compute the gradient of $J$, and write one step of the gradient descent with step size $\eta$. 
+\item
+Suppose we get a new point $ X_{n+1}$, what will the predicted $y_{n+1}$ be when $\lambda\to\infty$? 
+\end{enumerate}
+\end{problem}
+
+
+\begin{problem}{2 (15 points) Regularization increases training error}
+Note the two terms in $J(\bar w, \lambda)$. The first is the training error, and the second is the regularization. When $\lambda=0$ then we minimize just the training error. As $\lambda$ increases, the second term will become more and more dominant, and this means two things:  (1) We are giving more weight to the regularization term and therefore, the training error should perhaps decrease, and (2) and as $\lambda$ increases we should obtain a $\bar w$ with smaller norm. We will formalize both these things rigorously below. 
+
+Let $0<\lambda_1<\lambda_2$ be two regularizer values. Let $\bar w_1$, and $\bar w_2$ be the minimizers of $J(\bar w, \lambda_1)$, and $J(\bar w, \lambda_2)$ respectively. 
+
+\begin{enumerate}
+	\item Show that $\|\bar w_1\|_2^2\ge \|\bar w_2\|_2^2$. Therefore more regularization implies smaller norm of solution!
+	
+	\textbf{Hint:} Observe that $J(\bar w_1, \lambda_1)\le J(\bar w_2, \lambda_1)$, and $J(\bar w_2, \lambda_2)\le J(\bar w_1, \lambda_2)$ (why?). 
+	\item Show that the training error for $\bar w_1$ is less than that of $\bar w_2$. In other words, show that 
+\[
+\sum_{i=1}^n \Paren{y_i -\bar w_1\cdot \bar X_i}^2 \le \sum_{i=1}^n \Paren{y_i -\bar w_2\cdot \bar X_i}^2.
+\]
+This shows that as we regularize more, the training error grows.
+\textbf{Hint:} Use the first part of the problem.
+\end{enumerate}
+
+\end{problem}
+
+%\begin{problem}{3 (15 points)}
+%Suppose we have a classification problem, where each example $\bar X$ has $k$ \textbf{positive} features. Suppose we restrict weight vectors to be \textbf{positive}, and consider the following discriminative function:
+%\[
+%Pr (y= -1 | \bar X, \bar w, t ) = \frac{2}{1+\exp(\bar w\cdot \bar X-t)}.
+%\]
+%The positivity means that each entry of $\bar w$ is positive, and $t$ is also positive.
+%\begin{enumerate}
+%\item
+%Find the gradient of $(\bar X\cdot \bar w)^2$ with respect to $\bar w, t$.
+%\item 
+%Write the log-likelihood function $\ell(\bar w, t)$ for this problem.
+%\item
+%Is $\ell(\bar w, t)$ concave in the positive quadrant? 
+%\item
+%Compute the gradient of $\ell(\bar w)$.
+%\item
+%Write one step of the gradient ascent step to find the maximum likelihood estimate of $\bar w$.
+%\end{enumerate}
+%\end{problem}
+
+%Recall ridge regression with features in $\RR^d$. The objective is to find $\bar w = (\bar w^0, \bar w^1, \ldots, \bar w^d)$ and then for a feature $\bar X\in\RR^d$, we predict $y= \bar w^0+ \bar w^1  X^1+\ldots + \bar w^d  X^d=\tilde w\cdot \tilde X$ where $\tilde X = (1,  X^1, \ldots,  X^d)$. In least squares regression with a regularization $\lambda$ (ridge regression), we considered the following objective function:
+%\begin{align}
+%J(\bar w, \lambda)=\sum_{i=1}^n \Paren{y_i -\tilde w\cdot \tilde X_i}^2 +{\lambda} \cdot \|\bar w\|_2^2.
+%\label{eqn:ridge}
+%\end{align}
+%We then find a $\bar w$ to minimize $J(\bar w, \lambda)$, namely
+%\begin{equation}
+%\arg\min_{\bar w} J(\bar w, \lambda).
+%\label{eqn:optim}
+%\end{equation}
+
+\begin{problem}{3$^*$ (15 points) Ridge regression $\equiv$ MAP estimation with Gaussian prior}
+
+In  class we provided a Maximum Likelihood (ML) interpretation of least square regression without regularization (i.e., $\lambda=0$) under the Gaussian noise model. 
+
+The Gaussian noise model is $y_i= \bar w\cdot \bar X_i +N(0,\sigma^2)$, where $N(0,\sigma^2)$ is a Gaussian distribution with mean 0 and variance $\sigma^2$. In other words, 
+\begin{align}
+\proboff{y_i-\bar w\cdot \bar X_i=\nu|\bar w, \bar X} = \frac1{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{\nu^2}{2\sigma^2}\right). 
+\label{eqn:gaussian-model}
+\end{align}
+
+ We proved in class that Equation~\eqref{eqn:ridge} with $\lambda=0$  is equivalent to Maximum Likelihood estimation under the Gaussian noise model. 
+ 
+The goal of this problem is to show that least squares regression with regularization is equivalent to Maximum Aposteriori (MAP) estimation under a Gaussian prior over $\bar w$. 
+
+Suppose the noise model is still Gaussian (Equation~\eqref{eqn:gaussian-model}). Furthermore, suppose that $\bar w$ has a \textbf{prior distribution} that is Gaussian with mean $0$ and variance $\sigma^2/\lambda$, namely
+\[
+\proboff{\bar w}=\frac1{(2\pi\sigma^2/\lambda)^{d/2}}\exp\left(-\frac{\lambda\|\bar w\|_2^2}{2\sigma^2}\right).
+\]
+
+\begin{enumerate}
+\item 
+Show that the MAP estimator under Gaussian noise model and Gaussian prior:
+\begin{align}
+\label{eqn:linear}
+\arg\max_{\bar w} \proboff{w|y_1,\ldots, y_n,  X_1,\ldots,  X_n}	
+\end{align}
+is equivalent to solving~\eqref{eqn:optim}. 
+
+\textbf{Hint:} Start by noting that
+\[
+\arg\max_{\bar w}\proboff{\bar w|y_1,\ldots, y_n,  X_1,\ldots,  X_n} = \arg\max_{\bar w}\proboff{y_1,\ldots, y_n|  X_1,\ldots,  X_n, \bar w} \cdot \proboff{\bar w}.
+\]
+Now the first term is what we had in class for ML interpretation, and the second term is what will introduce the regularization.
+\item
+ What is the MAP estimator $\bar w$ as $\lambda\to\infty$, namely when the prior distribution of $\bar w$ is Gaussian with mean 0 and variance close to 0?
+\vfill
+\end{enumerate}
+\end{problem}
+
+
+
+
+\begin{problem}{4 (25 points) Linear and Quadratic Regression}
+Please refer to the Jupyter Notebook in the assignment, and complete the coding part in it!
+You can use sklearn regression package: \url{http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html}
+\end{problem}
+
+
+
+
+
+\end{document}
+
+If the model were trained with wine training2.txt, which λ would you choose to train your final model? Why?
+
+%
+%\begin{table*}[h]
+%\begin{center}
+%\begin{tabular}{c|ccccc}
+%{\bf Liked?} &
+%{\bf Easy?} &
+%{\bf AI?} &
+%{\bf Sys?} &
+%{\bf Thy?} &
+%{\bf Morning?} \\
+%\hline
+%+ & y  & y  & n  & y  & n  \\
+%+ & y  & y  & n  & y  & n  \\
+%+ & n  & y  & n  & n  & n  \\
+%+ & n  & n  & n  & y  & n  \\
+%+ & n  & y  & y  & n  & y  \\
+%+ & y  & y  & n  & n  & n  \\
+%+ & y  & y  & n  & y  & n  \\
+%+ & n  & y  & n  & y  & n  \\
+%+ & n  & n  & n  & n  & y  \\
+% + & y  & n  & n  & y  & y  \\
+% + & n  & y  & n  & y  & n  \\
+% + & y  & y  & y  & y  & y  \\
+%- & y  & y  & y  & n  & y  \\
+%- & n  & n  & y  & y  & n  \\
+%- & n  & n  & y  & n  & y  \\
+%- & y  & n  & y  & n  & y  \\
+%- & n  & n  & y  & y  & n  \\
+%- & n  & y  & y  & n  & y  \\
+%- & y  & n  & y  & n  & n  \\
+%- & y  & n  & y  & n  & y  \\
+%\end{tabular}
+%\end{center}
+%\caption{Course rating data set}
+%\label{tab:data:course}
+%\end{table*}
